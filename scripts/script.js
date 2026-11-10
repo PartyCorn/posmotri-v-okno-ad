@@ -59,7 +59,18 @@ form.onsubmit = (e) => {
 
 async function mainMechanics(endpoint) {
   try {
-    const data = await (await fetch(endpoint)).json();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+    let data;
+
+    try {
+      const response = await fetch(endpoint, { signal: controller.signal });
+      data = await response.json();
+    } finally {
+      clearTimeout(timeoutId);
+    }
+
     cardsOnPageState = data.results;
 
     if (!data?.results?.[0]) {
@@ -108,6 +119,10 @@ async function mainMechanics(endpoint) {
       cardTmp: cardTmp,
     });
   } catch (err) {
+    // показываем демо-данные из mock-data, когда сервер недоступен
+    if (err.message !== 'not-found') {
+      try { return await renderMockData(endpoint); } catch (mockErr) { err = mockErr; }
+    }
     if (err.message === 'not-found') {
       showError(videoContainer, videoNotFoundTmp, 'Нет подходящих видео =(');
     } else {
