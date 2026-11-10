@@ -1,3 +1,3 @@
-https://github.com/partycorn-edu/posposmotri-v-okno
+https://github.com/PartyCorn/posmotri-v-okno-ad
 
 ![Полноразмерный скриншот страницы](images/result.png)
